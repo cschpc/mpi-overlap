@@ -23,3 +23,36 @@ Some links that might be useful:
 https://enterprise-support.nvidia.com/s/article/understanding-tag-matching-for-developers
 https://www.youtube.com/watch?v=SzT6LFV3ggU (especially from 19:00 on)
 
+## Examples in LUMI
+
+Default settings (NIC offload)
+```
+srun -p debug --nodes=2 --ntasks-per-node=1 --hint=multithread ...
+srun: job 3661200 queued and waiting for resources
+srun: job 3661200 has been allocated resources
+MPI time with sendrecv,    rank 0 :      0.023651
+MPI time with isend/irecv, rank 0 : init 0.000632 complete 0.000057 (compute 1.618593)
+MPI time with put,         rank 0 : put  0.000057 complete 0.006110 (compute 1.605775)
+MPI time with persistent,  rank 0 : init 0.000050 complete 0.000019 (compute 1.607345)
+MPI time with sendrecv,    rank 1 :      0.024266
+MPI time with isend/irecv, rank 1 : init 0.000683 complete 0.000066 (compute 1.618397)
+MPI time with put,         rank 1 : put  0.000066 complete 0.000112 (compute 1.611762)
+MPI time with persistent,  rank 1 : init 0.000048 complete 0.000031 (compute 1.611544)
+```
+
+Disabling NIC offload and enabling progress thread:
+```
+MPICH_ASYNC_PROGRESS=1 FI_CXI_RX_MATCH_MODE=software srun -p debug --nodes=2 --ntasks-per-node=1 --cpus-per-task=2 --hint=multithread ...
+srun: job 3661378 queued and waiting for resources
+srun: job 3661378 has been allocated resources
+MPI time with sendrecv,    rank 0 :      0.034875
+MPI time with isend/irecv, rank 0 : init 0.000639 complete 0.000040 (compute 2.320915)
+MPI time with put,         rank 0 : put  0.000088 complete 0.000122 (compute 2.320953)
+MPI time with persistent,  rank 0 : init 0.000087 complete 0.000007 (compute 2.308032)
+MPI time with sendrecv,    rank 1 :      0.034453
+MPI time with isend/irecv, rank 1 : init 0.000675 complete 0.000054 (compute 2.320297)
+MPI time with put,         rank 1 : put  0.000075 complete 0.013851 (compute 2.307240)
+MPI time with persistent,  rank 1 : init 0.000081 complete 0.000018 (compute 2.309168)
+```
+
+
